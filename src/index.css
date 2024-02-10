@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body{
+  height: 100vh;
+}
+body, input, button {
+  font: 400 16px "Roboto", sans-serif;
+}
+
+.poppins{
+  font-family: "Poppins",sans-serif;
+}
+
+.traco::before{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #a8a8b3;
+  margin-right: 16px;
+}
+.traco::after{
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #a8a8b3;
+  margin-left: 16px;
+}
