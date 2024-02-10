@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import illustrationImg from "../assets/illustration.svg";
 import logo from "../assets/logo.svg";
 import { Button } from "../components/Button";
+import { useAuth } from "../hooks/useAuth";
 
 export default function NewRoom(){
+  const {user} = useAuth();
+
   return (
     <div className="flex items-stretch h-screen">
       <aside className="flex-[6] flex flex-col justify-center py-32 px-20 bg-[#835afd]">
@@ -16,7 +19,8 @@ export default function NewRoom(){
         <div className="flex flex-col w-full max-w-80 items-stretch text-center">
           <img src={logo} alt="letMeasK" 
           className="self-center"/>
-          <h2 className="text-2xl mt-16 mb-6 poppins">Criar um nova sala</h2>
+          <h1 className="text-3xl mt-8 mb-6 poppins">{user?.name}</h1>
+          <h2 className="text-2xl mt-4 mb-6 poppins">Criar um nova sala</h2>
           <form>
             <input 
               type="text"

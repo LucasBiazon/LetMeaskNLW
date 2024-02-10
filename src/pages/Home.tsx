@@ -1,26 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'; 
-import { auth } from '../services/firebase';
 import illustrationImg from "../assets/illustration.svg";
 import logo from "../assets/logo.svg";
 import googleIcon from "../assets/google-icon.svg";
 import { Button } from '../components/Button';
 
-export default function Home() {
-  const navigate = useNavigate(); 
+import { useAuth } from '../hooks/useAuth';
 
-  function navigateToNewRoom() {
-    const provider = new GoogleAuthProvider(); 
-    signInWithPopup(auth, provider) 
-      .then((result) => {
-        const user = result.user;
-        console.log("Usuário autenticado:", user);
-        navigate('/rooms/new'); 
-      })
-      .catch((error) => {
-        // Trate os erros, se necessário
-        console.error("Erro durante a autenticação com o Google:", error);
-      });
+export default function Home() {  
+  const navigate = useNavigate(); 
+  const {user, signInWithGoogle} = useAuth();
+
+  async function navigateToNewRoom() {
+    if(!user)
+    {
+     await signInWithGoogle()
+    }
+    navigate('/rooms/new'); 
   }
 
   return (
