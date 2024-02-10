@@ -1,12 +1,29 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import illustrationImg from "../assets/illustration.svg";
 import logo from "../assets/logo.svg";
 import { Button } from "../components/Button";
+import { FormEvent, useState } from "react";
+import { database } from "../services/firebase";
 import { useAuth } from "../hooks/useAuth";
+
 
 export default function NewRoom(){
   const {user} = useAuth();
+  const navigate = useNavigate();
+  const [newRoom, setNewRoom ] = useState('');
+  async function  handleCreateButton(event:FormEvent) {
+   event.preventDefault();
+   if(newRoom.trim() === ""){
+    return
+   }
+   const roomRef = database.ref('rooms')
+   const firebaseRoom = await roomRef.push({
+    title: newRoom,
+    authorId: user?.id
+   })
+    navigate(`/rooms/${firebaseRoom.key}`)
+  }
 
   return (
     <div className="flex items-stretch h-screen">
@@ -19,13 +36,14 @@ export default function NewRoom(){
         <div className="flex flex-col w-full max-w-80 items-stretch text-center">
           <img src={logo} alt="letMeasK" 
           className="self-center"/>
-          <h1 className="text-3xl mt-8 mb-6 poppins">{user?.name}</h1>
           <h2 className="text-2xl mt-4 mb-6 poppins">Criar um nova sala</h2>
-          <form>
+          <form onSubmit={handleCreateButton}>
             <input 
               type="text"
               placeholder="Nome da sala"
+              onChange = {(event) => setNewRoom(event.target.value)}
               className="h-12 rounded-lg border border-solid border-[#a8a8b3] bg-[#fff] py-0 px-4 w-full"
+              value={newRoom}
             />
             <Button type="submit">
                 Criar sala

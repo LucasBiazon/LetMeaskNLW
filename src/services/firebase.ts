@@ -1,5 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCx9NIT0ESxPFbWUAvTg8mCcyQHW9Qp-jA",
@@ -10,8 +12,7 @@ const firebaseConfig = {
   messagingSenderId: "209929374182",
   appId: "1:209929374182:web:bd5ebd356017c6e2ed6e27"
 };
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Obtém a instância de autenticação do Firebase
-
-export { app, auth, GoogleAuthProvider };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+export { auth, database };
