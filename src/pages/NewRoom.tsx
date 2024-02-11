@@ -24,7 +24,6 @@ export default function NewRoom(){
    })
     navigate(`/rooms/${firebaseRoom.key}`)
   }
-
   return (
     <div className="flex items-stretch h-screen">
       <aside className="flex-[6] flex flex-col justify-center py-32 px-20 bg-[#835afd]">
@@ -45,9 +44,11 @@ export default function NewRoom(){
               className="h-12 rounded-lg border border-solid border-[#a8a8b3] bg-[#fff] py-0 px-4 w-full"
               value={newRoom}
             />
-            <Button type="submit">
+            <div className="mt-8">
+            <Button type="submit"> 
                 Criar sala
             </Button>
+            </div>
           </form>
           <p className="text-sm text-[#737380] mt-4">
             Quer entrar em uma sala existente?  

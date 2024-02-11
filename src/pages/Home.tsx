@@ -3,13 +3,14 @@ import illustrationImg from "../assets/illustration.svg";
 import logo from "../assets/logo.svg";
 import googleIcon from "../assets/google-icon.svg";
 import { Button } from '../components/Button';
-
 import { useAuth } from '../hooks/useAuth';
+import { FormEvent, useState } from 'react';
+import { database } from '../services/firebase';
 
 export default function Home() {  
   const navigate = useNavigate(); 
   const {user, signInWithGoogle} = useAuth();
-
+  const [roomCode, setRoomCode] = useState('');
   async function navigateToNewRoom() {
     if(!user)
     {
@@ -18,6 +19,18 @@ export default function Home() {
     navigate('/rooms/new'); 
   }
 
+  async function handleJoinRoom (event: FormEvent) {
+    event.preventDefault();
+    if(roomCode.trim() === ''){
+      return
+    }
+    const roomRef = await database.ref(`rooms/${roomCode}`).get();
+    if(!roomRef.exists()){
+      alert("Sala não existe");
+      return
+    }
+    navigate(`/rooms/${roomCode}`)
+  }
   return (
     <div className="flex items-stretch h-screen">
       <aside className="flex-[6] flex flex-col justify-center py-32 px-20 bg-[#835afd]">
@@ -33,15 +46,19 @@ export default function Home() {
             Criar sua sala com o google
           </button>
           <div className="text-sm text-[#a8a8b3] mt-8 flex items-center justify-center traco">Ou entre em uma sala</div>
-          <form>
+          <form onSubmit={handleJoinRoom}>
             <input
               type="text"
               placeholder="Digite o código da sala"
+              onChange={(event) => setRoomCode(event.target.value)}
+              value={roomCode}
               className="h-12 rounded-lg border border-solid border-[#a8a8b3] bg-[#fff] py-0 px-4 w-full"
             />
-            <Button type="submit">
-              Entrar na sala
-            </Button>
+            <div className="mt-8">
+              <Button type="submit">
+                Entrar na sala
+              </Button>
+            </div>
           </form>
         </div>
       </main>
