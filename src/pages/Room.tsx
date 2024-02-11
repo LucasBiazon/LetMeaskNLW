@@ -1,27 +1,15 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import logoImg  from '../assets/logo.svg'
 import { Button } from '../components/Button'
 import { RoomCode } from '../components/RoomCode'
 import { useParams } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
 import { database } from '../services/firebase'
+import { Question } from '../components/Question'
+import { useRoom } from '../hooks/useRoom'
 
 type RoomParams = {
   id: string;
-}
-
-type FirebaseQuestions = Record<string, {
-  author: {
-    name: string
-  },
-  content: string,
-  isHighlighted: boolean,
-  isAnswered: boolean
-}>
-
-type Questions = {
-  id: string,
-
 }
 
 export function Room(){
@@ -29,27 +17,8 @@ export function Room(){
   const params = useParams<RoomParams>();
   const roomId = params.id
   const [newQuestion, setNewQuestion] = useState('');
-  const [questions, setQuestions] = useState<Questions[]>([]);
-  const [title, setTitle] = useState('');
-  useEffect(() => {
-   const roomRef =  database.ref(`rooms/${roomId}`)
-   roomRef.on('value', room => {
-      const databaseRoom = room.val();
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions;
-      const parsedQuestions = Object.entries(firebaseQuestions ?? {}).map(([key, value]) => {
-        return {
-          id: key,
-          content: value.content,
-          author: value.author,
-          isHighlighted: value.isHighlighted,
-          isAnswered: value.isAnswered
-        }
-      })
-      setTitle(databaseRoom.title)
-      setQuestions(parsedQuestions)
-   })
-  }, [roomId])
-
+  const {title, questions} = useRoom(roomId as string);
+  
   async function handleSendQuestion(event: FormEvent) {
     event.preventDefault();
     if(newQuestion.trim() == ''){
@@ -82,19 +51,20 @@ export function Room(){
         <h1 className='poppins text-2xl text-zinc-900'>
          Sala {title}
         </h1>
+        {questions.length > 0  &&  (
         <div className="bg-[#e559f9] rounded-full py-2 px-4 flex gap-2 text-gray-50 text-sm font-semibold">
-          {questions.length > 0  &&  (
-            <span className=" text-gray-50 text-sm font-semibold">{questions.length}</span>
+          <span className=" text-gray-50 text-sm font-semibold">{questions.length}</span>
+          {questions.length > 1  ? (
+            <span className=" text-gray-50 text-sm font-semibold"> 
+              perguntas
+            </span> 
+          ): (
+            <span className=" text-gray-50 text-sm font-semibold">
+              pergunta
+            </span>
           )}
-          {questions.length > 1 && questions.length > 0 ? 
-          <span className=" text-gray-50 text-sm font-semibold"> 
-            perguntas
-          </span> :
-          <span className=" text-gray-50 text-sm font-semibold">
-          pergunta
-          </span>
-          }
         </div>
+        )}
       </div>
       <form onSubmit={handleSendQuestion}>
         <textarea placeholder='O que você quer perguntar?' onChange={(event) => setNewQuestion(event.target.value)} value={newQuestion}
@@ -117,6 +87,17 @@ export function Room(){
           </div>
         </div>
       </form>
+      <div className='flex flex-col gap-4 mt-12 pb-4'>
+          {questions.map(question => {
+          return (
+          <Question
+            key={question.id}
+            content={question.content}
+            author={question.author}
+          />
+          )
+        })}
+      </div>
     </main>
    </div>
   )
